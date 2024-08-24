@@ -1,4 +1,4 @@
-# Rubu on Rails BoilerPlate Using Docker
+# Ruby on Rails BoilerPlate Using Docker
 
 by Sunil Prajapati
 
