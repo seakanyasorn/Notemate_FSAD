@@ -54,8 +54,8 @@ To exit the container, simply run the command
 
 `exit`
 
-
-## To stop all the containers, run the command on the folder where docker-compose files are located
+## Stopping the containers
+To stop all the containers, run the command on the folder where docker-compose files are located
 
 `docker compose down --remove-orphans`
 
