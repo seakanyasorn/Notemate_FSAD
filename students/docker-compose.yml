@@ -1,0 +1,17 @@
+services:
+  students-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: students-app
+    command: bash -c "bundle exec rake db:create && bundle exec rake db:migrate && ./bin/rails server -b 0.0.0.0 -p 3000"
+    ports:
+      - "3000:3000"
+    networks:
+      - students_network
+    volumes:
+      - ./:/rails
+
+networks:
+  students_network:
+    external: true
