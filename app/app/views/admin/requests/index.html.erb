@@ -1,0 +1,25 @@
+<h1>Pending Requests</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Action</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @requests.each do |request| %>
+      <tr>
+        <td><%= request.user.email %></td>
+        <td><%= request.action %></td>
+        <td><%= request.status %></td>
+        <td>
+          <%= link_to 'Approve', approve_admin_request_path(request), method: :patch, class: "btn btn-primary" %>
+          <%= link_to 'Reject', reject_admin_request_path(request), method: :patch, class: "btn btn-danger" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

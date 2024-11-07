@@ -1,0 +1,72 @@
+<h1>Admin Dashboard</h1>
+<p>Welcome, <%= current_user.name %></p>
+
+<h2>Pending Requests</h2>
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Requested Name</th>
+      <th>Request Type</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @pending_requests.each do |request| %>
+      <tr>
+        <td><%= request.user.name %></td>
+        <td>
+          <% if request.request_type == 'subject' %>
+            <%= request.subject_name || 'N/A' %>
+          <% elsif request.request_type == 'institution' %>
+            <%= request.institution_name || 'N/A' %>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td><%= request.request_type.humanize %></td>
+        <td><%= request.status %></td>
+        <td>
+          <%= button_to 'Approve', approve_admin_request_path(request), method: :post, class: 'btn btn-success' %>
+          <%= button_to 'Reject', reject_admin_request_path(request), method: :post, class: 'btn btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h2>User Reports</h2>
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Report Type</th>
+      <th>Description</th>
+      <th>Note Title</th> <!-- Add this column for note titles -->
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @user_reports.each do |report| %>
+      <tr>
+        <td><%= report.user.name %></td> <!-- Assuming `user` association on `ReportIssue` model -->
+        <td><%= report.report_type.humanize %></td>
+        <td><%= report.description %></td>
+        <td>
+          <% if report.report_type == 'inappropriate_note' && report.note %>
+            <%= report.note.title %> <!-- Show the note title if it's an inappropriate note -->
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td>
+          <!-- Buttons for handling the report -->
+          <%= button_to 'Delete Note', delete_note_admin_report_path(report), method: :delete, data: { confirm: 'Are you sure you want to delete this note?' }, class: 'btn btn-warning' %>
+          <%= button_to 'Mark Resolved', resolve_admin_report_path(report), method: :post, class: 'btn btn-primary' %>
+          <%= button_to 'Delete Report', delete_report_admin_report_path(report), method: :delete, data: { confirm: 'Are you sure you want to delete this report?' }, class: 'btn btn-danger' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

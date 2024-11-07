@@ -1,0 +1,100 @@
+<h1 class="title">NoteMate</h1>
+
+<div class="container">
+  <div class="header">
+    <%= link_to 'New Note', new_note_path, class: 'btn btn-primary new-note-btn' %>
+    <%= link_to 'Report Issue', new_report_issue_path, class: 'btn btn-report' %>
+    <div class="search-form">
+      <%= form_with url: notes_path, method: :get, local: true do |form| %>
+
+      <div class="form-row">
+        <div class="form-column">
+          <div class="form-group">
+            <%= form.label :subject_id, "Subject", class: "form-label" %>
+            <%= form.collection_select :subject_id, Subject.all, :id, :name, { prompt: "Select Subject" }, class: "form-control" %>
+          </div>
+
+          <div class="form-group">
+            <%= form.label :user_id, "User", class: "form-label" %>
+            <%= form.collection_select :user_id, User.all, :id, :name, { prompt: "Select User" }, class: "form-control" %>
+          </div>
+
+          <div class="form-group">
+            <%= form.label :institution_id, "Institution", class: "form-label" %>
+            <%= form.collection_select :institution_id, Institution.all, :id, :name, { prompt: "Select Institution" }, class: "form-control" %>
+          </div>
+
+          <div class="form-group">
+            <%= form.label :semester, "Semester", class: "form-label" %>
+            <%= form.select :semester, ['August', 'January', 'Intersem'], { prompt: 'Select Semester' }, class: "form-control" %>
+          </div>
+        </div>
+
+        <div class="form-column">
+          <div class="form-group">
+            <%= form.label :school_id, "School", class: "form-label" %>
+            <%= form.collection_select :school_id, School.all, :id, :name, { prompt: "Select School" }, class: "form-control", id: "school-select" %>
+          </div>
+
+          <div class="form-group">
+            <%= form.label :department_id, "Department", class: "form-label" %>
+            <%= form.collection_select :department_id, [], :id, :name, { prompt: "Select Department" }, class: "form-control", id: "department-select" %>
+          </div>
+
+          <div class="form-group">
+            <%= form.label :year, "Year", class: "form-label" %>
+            <%= form.number_field :year, class: "form-control", min: 2000, max: Date.today.year %>
+          </div>
+        </div>
+      </div>
+
+      <div class="button-group">
+      <%= link_to 'Reset', notes_path, class: 'btn btn-signup' %>
+      <%= form.submit 'Search', class: 'btn btn-primary' %>
+    </div>
+
+      
+      <% end %>
+    </div>
+  </div>
+
+  <div class="notes-list">
+    <% if @notes.empty? %>
+      <p class="empty-message">No notes found for the selected filters.</p>
+    <% else %>
+      <% @notes.each do |note| %>
+        <div class="note-card">
+          <h2><%= link_to note.title, note, class: 'note-title' %></h2>
+          <p class="note-content"><%= truncate(note.content, length: 100) %></p>
+          <p><strong>Semester:</strong> <%= note.semester %></p>
+          <p><strong>Year:</strong> <%= note.year %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const schoolSelect = document.getElementById("school-select");
+    const departmentSelect = document.getElementById("department-select");
+
+    schoolSelect.addEventListener("change", function() {
+      const schoolId = this.value;
+      departmentSelect.innerHTML = "<option value=''>Select Department</option>"; // Reset department dropdown
+
+      if (schoolId) {
+        fetch(`/departments?school_id=${schoolId}`)
+          .then(response => response.json())
+          .then(data => {
+            data.forEach(department => {
+              const option = document.createElement("option");
+              option.value = department.id;
+              option.textContent = department.name;
+              departmentSelect.appendChild(option);
+            });
+          });
+      }
+    });
+  });
+</script>

@@ -1,0 +1,56 @@
+<h1 class="title">New Institution</h1>
+
+<div class="container">
+  <% if current_user.admin? %>
+    <%= form_with(model: @institution, local: true) do |form| %>
+      <% if @institution.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@institution.errors.count, "error") %> prohibited this institution from being saved:</h2>
+          <ul>
+            <% @institution.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= form.label :name, class: "form-label" %>
+        <%= form.text_field :name, class: "form-control", placeholder: "Enter institution name" %>
+      </div>
+
+    <div class="button-group">
+        <%= link_to 'Back to Create Note', new_note_path, class: 'btn btn-primary new-note-btn' %>
+        <%= form.submit "Create Institution", class: "btn" %>
+      </div>
+    <% end %>
+  <% else %>
+    <!-- Non-admin users submit a request for a new subject -->
+    <h2>Request New Institution</h2>
+    <%= form_with(model: Request.new, url: requests_path, local: true) do |form| %>
+      
+      <% if @request && @request.errors.any? %>
+        <div class="error_explanation">
+          <h4><%= pluralize(@request.errors.count, "error") %> prohibited this request from being submitted:</h4>
+          <ul>
+            <% @request.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <%= form.hidden_field :request_type, value: 'institution' %> <!-- Hidden field to specify type -->
+      
+      <div class="form-group">
+        <%= form.label :institution_name, class: "form-label" %>
+        <%= form.text_field :institution_name, class: "form-control", placeholder: "Enter institution name" %>
+      </div>
+
+      <div class="button-group">
+        <%= link_to 'Back to Create Note', new_note_path, class: 'btn btn-primary new-note-btn' %>
+        <%= form.submit 'Submit Institution Request', class: 'btn' %>
+      </div>
+    <% end %>
+  <% end %>
+  
+</div>

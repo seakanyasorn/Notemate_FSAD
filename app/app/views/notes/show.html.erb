@@ -1,0 +1,23 @@
+<div class="note-card">
+  <h1>Note Successfully Created!</h1>
+
+  <div class="note-details">
+    <h2 class="note-title">Title: <%= @note.title %></h2>
+    <p class="note-content">Content: <%= @note.content %></p>
+    
+    <% if @note.file.attached? %>
+      <div class="pdf-preview">
+        <!-- Embed PDF Preview -->
+        <iframe src="<%= url_for(@note.file) %>" width="100%" height="500px" type="application/pdf"></iframe>
+      </div>
+      <p>
+        <%= link_to 'Download File', rails_blob_path(@note.file, disposition: 'attachment'), class: 'btn btn-download' %>
+      </p>
+    <% end %>
+  </div>
+
+  <!-- Buttons Section with Flexbox -->
+  <div class="buttons-container">
+    <%= link_to 'Back to Homepage', root_path, class: 'btn btn-primary' %>
+  </div>
+</div>

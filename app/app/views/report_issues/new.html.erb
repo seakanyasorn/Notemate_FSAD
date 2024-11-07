@@ -1,0 +1,56 @@
+<h2>Report an Issue</h2>
+
+<%= form_with model: @report_issue, local: true do |form| %>
+  <script>
+    console.log("Form with model report_issue is rendered");
+  </script>
+  <div class="field">
+    <%= form.label :report_type, "Type of Issue" %>
+    <%= form.select :report_type, [["Inappropriate Note", "inappropriate_note"], ["Bug", "bug"], ["Other", "other"]], prompt: "Select Report Type", id: 'report_type' %>
+  </div>
+
+  <div class="field" id="note_selection">
+    <%= form.label :note_id, "Select Note" %>
+    <%= form.collection_select :note_id, @notes, :id, :title, prompt: "Choose a note" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description, "Describe the issue" %>
+    <%= form.text_area :description, rows: 5 %>
+  </div>
+  
+  <div class="actions">
+    <%= form.submit "Submit Report", class: 'btn btn-danger' %>
+  </div>
+<% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const reportTypeSelect = document.getElementById("report_type");
+    const noteSelectionDiv = document.getElementById("note_selection");
+    const noteSelect = document.getElementById("report_issue_note_id"); // Adjust the ID as necessary
+
+    reportTypeSelect.addEventListener("change", function() {
+      const reportType = this.value;
+      noteSelectionDiv.style.display = reportType === 'inappropriate_note' ? 'block' : 'none'; // Show or hide note selection
+
+      if (reportType === 'inappropriate_note') {
+        noteSelect.innerHTML = "<option value=''>Choose a note</option>"; // Reset note dropdown
+
+        // Fetch notes if 'Inappropriate Note' is selected
+        fetch('/notes') // Adjust the URL if necessary
+          .then(response => response.json())
+          .then(data => {
+            data.forEach(note => {
+              const option = document.createElement("option");
+              option.value = note.id;
+              option.textContent = note.title;
+              noteSelect.appendChild(option);
+            });
+          });
+      } else {
+        noteSelect.innerHTML = "<option value=''>Choose a note</option>"; // Reset note dropdown if report type changes
+      }
+    });
+  });
+</script>

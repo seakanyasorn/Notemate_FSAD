@@ -1,23 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= content_for(:title) || "Students" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<head>
+  <title><%= content_for(:title) || "Students" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= yield :head %>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body>
+<header class="site-header">
+  <div class="site-logo">
+    <%= link_to 'NoteMate', root_path, class: 'logo-text' %> <!-- Site title -->
+  </div>
+  <nav class="nav-links">
+    <%= link_to 'Notes', notes_path, class: 'btn btn-primary' %>
+    <%= link_to 'Community', community_path, class: 'btn btn-primary' %>
+  </nav>
+  <div class="user-actions">
+    <% if user_signed_in? && current_user.admin? %>
+      <li><%= link_to 'Admin Dashboard', admin_root_path %></li>
+      <span>Welcome, <%= current_user.name %>!</span> <!-- Show username -->
+      <%= form_for(current_user, url: destroy_user_session_path, html: { method: :delete }) do |f| %>
+        <%= f.submit "Log out", class: 'btn-logout' %>
+      <% end %>
+    <% elsif user_signed_in? %> <!-- Correct placement of elsif -->
+      <span>Welcome, <%= current_user.name %>!</span> <!-- Show username -->
+      <%= form_for(current_user, url: destroy_user_session_path, html: { method: :delete }) do |f| %>
+        <%= f.submit "Log out", class: 'btn-logout' %>
+      <% end %>
+    <% else %>
+      <%= link_to 'Login', new_user_session_path, class: 'btn btn-login' %>
+      <%= link_to 'Sign Up', new_user_registration_path, class: 'btn btn-signup' %>
+    <% end %>
+  </div>
+</header>
 
-    <%= yield :head %>
-
-    <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
-
-  <body>
-    <%= yield %>
-  </body>
+<%= yield %>
+</body>
 </html>

@@ -1,0 +1,27 @@
+<h1 class="title">Institutions</h1>
+
+<div class="container">
+  <table>
+    <thead>
+      <tr>
+        <th class="form-label">Name</th>
+        <th colspan="2" class="form-label">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @institutions.each do |institution| %>
+        <tr>
+          <td><%= institution.name %></td>
+          <td><%= link_to 'Edit', edit_institution_path(institution), class: "btn btn-primary" %></td>
+          <td><%= link_to 'Delete', institution_path(institution), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger ' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="buttons-container">
+    <%= link_to 'New Institution', new_institution_path, class: "btn" %>
+    <%= link_to 'Back to Homepage', root_path, class: 'btn btn-primary' %>
+  </div>
+</div>
