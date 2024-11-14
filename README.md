@@ -1,6 +1,6 @@
 # Ruby on Rails BoilerPlate Using Docker
 
-by Sunil Prajapati
+by Kanyasorn Phongphaitoonsin
 
 ## Pre-requisites
 
