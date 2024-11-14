@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_31_135613) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_13_074138) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -81,7 +81,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_31_135613) do
     t.datetime "updated_at", null: false
     t.string "report_type"
     t.string "status"
-    t.bigint "note_id", null: false
+    t.bigint "note_id"
+    t.integer "review_id"
     t.index ["note_id"], name: "index_report_issues_on_note_id"
     t.index ["user_id"], name: "index_report_issues_on_user_id"
   end
@@ -96,6 +97,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_31_135613) do
     t.string "request_type"
     t.string "institution_name"
     t.index ["user_id"], name: "index_requests_on_user_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.bigint "subject_id", null: false
+    t.text "content"
+    t.integer "rating"
+    t.string "reviewer"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subject_id"], name: "index_reviews_on_subject_id"
   end
 
   create_table "schools", force: :cascade do |t|
@@ -121,7 +132,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_31_135613) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "department_id"
+    t.bigint "institution_id"
     t.index ["department_id"], name: "index_subjects_on_department_id"
+    t.index ["institution_id"], name: "index_subjects_on_institution_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -148,7 +161,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_31_135613) do
   add_foreign_key "report_issues", "notes"
   add_foreign_key "report_issues", "users"
   add_foreign_key "requests", "users"
+  add_foreign_key "reviews", "subjects"
   add_foreign_key "subject_requests", "subjects"
   add_foreign_key "subject_requests", "users"
   add_foreign_key "subjects", "departments"
+  add_foreign_key "subjects", "institutions"
 end

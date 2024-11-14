@@ -1,0 +1,6 @@
+[
+    { "label": "Inappropriate Note", "value": "inappropriate_note" },
+    { "label": "Bug", "value": "bug" },
+    { "label": "Other", "value": "other" }
+  ]
+  

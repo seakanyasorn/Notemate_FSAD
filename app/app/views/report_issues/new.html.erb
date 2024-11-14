@@ -4,14 +4,33 @@
   <script>
     console.log("Form with model report_issue is rendered");
   </script>
-  <div class="field">
+  
+  <div class="field" id="report_type">
     <%= form.label :report_type, "Type of Issue" %>
-    <%= form.select :report_type, [["Inappropriate Note", "inappropriate_note"], ["Bug", "bug"], ["Other", "other"]], prompt: "Select Report Type", id: 'report_type' %>
+    <%= form.select :report_type, [["Inappropriate Note", "inappropriate_note"],["Inappropriate Review", "inappropriate_review"], ["Bug", "bug"], ["Other", "other"]], prompt: "Select Report Type", id: 'report_type' %>
   </div>
 
   <div class="field" id="note_selection">
     <%= form.label :note_id, "Select Note" %>
     <%= form.collection_select :note_id, @notes, :id, :title, prompt: "Choose a note" %>
+  </div>
+
+  <div class="field" id="review_selection">
+    <%= form.label :review_id, "Select Review" %>
+    <%= form.collection_select :review_id, @reviews, :id, :content, prompt: "Choose a review" %>
+  </div>
+
+  <!-- Hidden data rendered by Rails -->
+  <div id="hidden_notes_data" style="display:none;">
+    <% @notes.each do |note| %>
+      <div class="note" data-id="<%= note.id %>" data-title="<%= note.title %>"></div>
+    <% end %>
+  </div>
+
+  <div id="hidden_reviews_data" style="display:none;">
+    <% @reviews.each do |review| %>
+      <div class="review" data-id="<%= review.id %>" data-content="<%= review.content %>"></div>
+    <% end %>
   </div>
 
   <div class="field">
@@ -26,31 +45,56 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    const reportTypeSelect = document.getElementById("report_type");
-    const noteSelectionDiv = document.getElementById("note_selection");
-    const noteSelect = document.getElementById("report_issue_note_id"); // Adjust the ID as necessary
+    const reportTypeSelect = document.getElementById("report_issue_report_type"); 
+    
+    // Check if the element exists
+    if (reportTypeSelect) {
+      const noteSelectionDiv = document.getElementById("note_selection");
+      const noteSelect = document.getElementById("report_issue_note_id");
+      const reviewSelectionDiv = document.getElementById("review_selection");
+      const reviewSelect = document.getElementById("report_issue_review_id");
 
-    reportTypeSelect.addEventListener("change", function() {
-      const reportType = this.value;
-      noteSelectionDiv.style.display = reportType === 'inappropriate_note' ? 'block' : 'none'; // Show or hide note selection
+      // Initially hide the note and review selection divs
+      noteSelectionDiv.style.display = 'none';
+      reviewSelectionDiv.style.display = 'none';
 
-      if (reportType === 'inappropriate_note') {
-        noteSelect.innerHTML = "<option value=''>Choose a note</option>"; // Reset note dropdown
+      reportTypeSelect.addEventListener("change", function() {
+        const reportType = this.value;
 
-        // Fetch notes if 'Inappropriate Note' is selected
-        fetch('/notes') // Adjust the URL if necessary
-          .then(response => response.json())
-          .then(data => {
-            data.forEach(note => {
-              const option = document.createElement("option");
-              option.value = note.id;
-              option.textContent = note.title;
-              noteSelect.appendChild(option);
-            });
+        // Show/hide note and review selection based on report type
+        noteSelectionDiv.style.display = reportType === 'inappropriate_note' ? 'block' : 'none';
+        reviewSelectionDiv.style.display = reportType === 'inappropriate_review' ? 'block' : 'none';
+
+        if (reportType === 'inappropriate_note') {
+          // Clear existing options
+          noteSelect.innerHTML = "<option value=''>Choose a note</option>";
+
+          // Populate notes from hidden HTML elements
+          const notes = document.querySelectorAll("#hidden_notes_data .note");
+          notes.forEach(function(note) {
+            const option = document.createElement("option");
+            option.value = note.dataset.id;
+            option.textContent = note.dataset.title;
+            noteSelect.appendChild(option);
           });
-      } else {
-        noteSelect.innerHTML = "<option value=''>Choose a note</option>"; // Reset note dropdown if report type changes
-      }
-    });
+        } else if (reportType === 'inappropriate_review') {
+          // Clear existing options
+          reviewSelect.innerHTML = "<option value=''>Choose a review</option>";
+
+          // Populate reviews from hidden HTML elements
+          const reviews = document.querySelectorAll("#hidden_reviews_data .review");
+          reviews.forEach(function(review) {
+            const option = document.createElement("option");
+            option.value = review.dataset.id;
+            option.textContent = review.dataset.content;
+            reviewSelect.appendChild(option);
+          });
+        } else {
+          // Reset the select fields if no type is selected
+          noteSelect.innerHTML = "<option value=''>Choose a note</option>";
+          reviewSelect.innerHTML = "<option value=''>Choose a review</option>";
+        }
+      });
+    }
   });
 </script>

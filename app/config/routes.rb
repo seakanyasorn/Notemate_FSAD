@@ -11,11 +11,16 @@ Rails.application.routes.draw do
   devise_for :users
   resources :students
   resources :users
-  resources :subjects
+  resources :reviews
+  resources :subjects do
+    resources :reviews, only: [:new, :create]  # Nested reviews routes under subjects
+  end
   resources :notes
   resources :institutions
 
   resources :requests, only: [:new, :create]
+  
+  # Use report_issues for reporting
   resources :report_issues, only: [:new, :create]
 
   resources :schools do
@@ -29,26 +34,27 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
-    get "dashboard", to: "dashboard#index"  # Admin dashboard landing page
-  
-    resources :subjects, only: [:index]  # View subjects in the admin namespace
-  
+    get "dashboard", to: "dashboard#index"
+
+    resources :subjects, only: [:index]
+
     resources :requests, only: [:index] do
       member do
-        post :approve # Approve the request
-        post :reject  # Reject the request
+        post :approve
+        post :reject
       end
     end
 
-    resources :reports, only: [:index] do
+    resources :reports, only: [:index, :destroy] do
       member do
-        patch :resolve
-        delete :delete_note, action: :delete_note # Custom delete note action
-        delete :delete_report, action: :destroy # Standard destroy action for reports
+        post :resolve
+        delete :delete_note, action: :delete_note
+        delete :delete_review
+        delete :delete_report, action: :destroy
       end
     end
-  
-    root to: 'dashboard#index'  # Admin dashboard landing page
+
+    root to: 'dashboard#index'
   end
 
   # Health check route

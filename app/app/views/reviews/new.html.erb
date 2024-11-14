@@ -1,0 +1,103 @@
+<h1 class="title">New Review</h1>
+
+<div class="container">
+<%= form_with model: @review, local: true do |form| %>
+  <% if @review.errors.any? %>
+    <div class="error-messages">
+      <h2><%= pluralize(@review.errors.count, "error") %> prevented this review from being saved:</h2>
+      <ul>
+        <% @review.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :content %>
+    <%= form.text_area :content, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :subject_id, "Subject" %>
+    <%= form.collection_select :subject_id, Subject.all, :id, :name, { prompt: "Select a subject" }, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+  <%= form.label :institution_id, "Institution", class: "form-label" %>
+  <div class="input-group">
+    <%= form.collection_select :institution_id, Institution.all, :id, :name, { prompt: "Select Institution" }, class: "form-control" %>
+    <%= link_to 'Add New Institution', new_institution_path, class: 'btn btn-link add-new-institution' %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= form.label :school_id, "School", class: "form-label" %>
+  <div class="input-group">
+    <%= form.collection_select :school_id, School.all, :id, :name, { prompt: "Select School" }, class: "form-control", id: 'school-select' %>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= form.label :department_id, "Department", class: "form-label" %>
+  <div class="input-group">
+    <%= form.collection_select :department_id, [], :id, :name, { prompt: "Select Department" }, class: "form-control", id: 'department-select' %>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const schoolSelect = document.getElementById("school-select");
+  const departmentSelect = document.getElementById("department-select");
+
+  schoolSelect.addEventListener("change", function() {
+    const schoolId = this.value;
+
+    // Clear the department select
+    departmentSelect.innerHTML = "<option value=''>Select Department</option>";
+
+    if (schoolId) {
+      fetch(`/departments/for_school?school_id=${schoolId}`)
+        .then(response => response.json())
+        .then(data => {
+          data.forEach(department => {
+            const option = document.createElement("option");
+            option.value = department.id;
+            option.textContent = department.name;
+            departmentSelect.appendChild(option);
+          });
+        });
+    }
+  });
+});
+</script>
+  
+  
+  <div class="form-group">
+      <%= form.label :user_id, "User", class: "form-label" %>
+      <p><%= current_user.name %></p> <!-- Display the current user's name -->
+      <%= form.hidden_field :user_id, value: current_user.id %> <!-- Store the user ID -->
+  </div>
+  
+  <div class="form-group">
+      <%= form.label :semester, "Semester", class: "form-label" %>
+      <%= form.select :semester, ['August', 'January', 'Intersem'], { prompt: 'Select Semester' }, class: "form-control" %>
+  </div>
+
+  <div class="form-group">
+      <%= form.label :year, "Year", class: "form-label" %>
+      <%= form.number_field :year, class: "form-control", min: 2000, max: Date.today.year %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :rating %>
+    <%= form.number_field :rating, in: 1..5, step: 1, class: "form-control" %>
+  </div>
+  
+
+  <div class="button-group">
+    <%= link_to 'Back to Homepage', root_path, class: 'btn btn-signup' %>
+    <%= form.submit 'Create Review', class: "btn btn-primary" %>
+  </div>
+<% end %>
+</div>

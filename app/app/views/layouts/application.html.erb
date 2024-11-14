@@ -21,7 +21,7 @@
   </div>
   <nav class="nav-links">
     <%= link_to 'Notes', notes_path, class: 'btn btn-primary' %>
-    <%= link_to 'Community', community_path, class: 'btn btn-primary' %>
+    <%= link_to 'Community', reviews_path, class: 'btn btn-primary' %>
   </nav>
   <div class="user-actions">
     <% if user_signed_in? && current_user.admin? %>

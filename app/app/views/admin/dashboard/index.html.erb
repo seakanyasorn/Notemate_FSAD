@@ -44,6 +44,7 @@
       <th>Report Type</th>
       <th>Description</th>
       <th>Note Title</th> <!-- Add this column for note titles -->
+      <th>Review Content</th> <!-- Add this column for review content -->
       <th>Actions</th>
     </tr>
   </thead>
@@ -61,8 +62,19 @@
           <% end %>
         </td>
         <td>
+          <% if report.report_type == 'inappropriate_review' && report.review %>
+            <%= report.review.content %> <!-- Show the review content if it's an inappropriate review -->
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td>
           <!-- Buttons for handling the report -->
-          <%= button_to 'Delete Note', delete_note_admin_report_path(report), method: :delete, data: { confirm: 'Are you sure you want to delete this note?' }, class: 'btn btn-warning' %>
+          <% if report.report_type == 'inappropriate_note' %>
+            <%= button_to 'Delete Note', delete_note_admin_report_path(report), method: :delete, data: { confirm: 'Are you sure you want to delete this note?' }, class: 'btn btn-warning' %>
+          <% elsif report.report_type == 'inappropriate_review' %>
+            <%= button_to 'Delete Review', delete_review_admin_report_path(report), method: :delete, data: { confirm: 'Are you sure you want to delete this review?' }, class: 'btn btn-warning' %>
+          <% end %>
           <%= button_to 'Mark Resolved', resolve_admin_report_path(report), method: :post, class: 'btn btn-primary' %>
           <%= button_to 'Delete Report', delete_report_admin_report_path(report), method: :delete, data: { confirm: 'Are you sure you want to delete this report?' }, class: 'btn btn-danger' %>
         </td>

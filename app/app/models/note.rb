@@ -3,7 +3,8 @@ class Note < ApplicationRecord
   belongs_to :subject
   belongs_to :institution
   has_one_attached :file
-  has_many :report_issues
+  # has_many :report_issues
+  has_many :report_issues, dependent: :destroy
   validates :title, presence: true
   validates :content, presence: true
   validates :subject_id, presence: true
